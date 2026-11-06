@@ -1,0 +1,17 @@
+{
+  "name": "Trade",
+  "plural": "trades",
+  "label": "Trades",
+  "description": "An executed or attempted order on a global venue for a given instrument symbol.",
+  "fields": [
+    { "name": "id", "type": "long", "primaryKey": true, "generated": true, "label": "ID" },
+    { "name": "tradeTime", "type": "datetime", "required": true },
+    { "name": "symbol", "type": "string", "required": true, "maxLength": 16, "searchable": true, "filterable": true },
+    { "name": "side", "type": "enum", "values": ["BUY", "SELL"], "required": true, "filterable": true },
+    { "name": "quantity", "type": "integer", "required": true },
+    { "name": "price", "type": "decimal", "required": true, "precision": 19, "scale": 4 },
+    { "name": "currency", "type": "string", "maxLength": 3, "filterable": true },
+    { "name": "venue", "type": "string", "maxLength": 8, "label": "Venue (MIC)", "filterable": true },
+    { "name": "status", "type": "enum", "values": ["FILLED", "PARTIAL", "CANCELLED", "REJECTED"], "required": true, "filterable": true }
+  ]
+}

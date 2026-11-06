@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+evaluationDependsOn(':generator')
+
+repositories { mavenCentral() }
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'com.h2database:h2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+def genJavaDir = layout.buildDirectory.dir('generated/sources/schema/java')
+sourceSets.main.java.srcDir genJavaDir
+
+// Runs the generator: schemas/*.json -> Spring (build/generated) + React (frontend/src/generated)
+tasks.register('generateCode', JavaExec) {
+    group = 'codegen'
+    description = 'Generates JPA entities, repositories, controllers and react-admin views from schemas/*.json'
+    classpath = project(':generator').sourceSets.main.runtimeClasspath
+    mainClass = 'io.github.kcbear.generator.GeneratorMain'
+    def schemaDir = rootProject.file('schemas')
+    def tsDir = rootProject.file('frontend/src/generated')
+    args = ['--schemas', schemaDir.path,
+            '--java-out', genJavaDir.get().asFile.path,
+            '--ts-out', tsDir.path,
+            '--package', 'io.github.kcbear.trading']
+    inputs.dir(schemaDir)
+    inputs.dir(project(':generator').file('src/main/resources/templates'))
+    outputs.dir(genJavaDir)
+    outputs.dir(tsDir)
+}
+
+tasks.named('compileJava') { dependsOn 'generateCode' }
+
+test { useJUnitPlatform() }
