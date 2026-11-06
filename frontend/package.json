@@ -12,8 +12,8 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@mui/icons-material": "^5.16.7",
-    "@mui/material": "^5.16.7",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
     "@tanstack/react-table": "^8.20.5",
     "ra-data-simple-rest": "^5.4.0",
     "react": "^18.3.1",
