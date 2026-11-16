@@ -146,10 +146,10 @@ public class CodeGenerator {
                         entity.label, entity.plural, entity.schemaFile);
 
         CodeBlock.Builder config = CodeBlock.builder().add("new $T.Config($S, ", simpleRest, entity.plural)
-                .add("Set.of($L), ", quotedFields(entity.fields.stream().filter(x -> x.sortable).map(x -> x.name).toList()))
-                .add("Set.of($L), ", quotedFields(entity.fields.stream().filter(x -> x.filterable || x.primaryKey).map(x -> x.name).toList()))
-                .add("Set.of($L), ", quotedFields(entity.fields.stream().filter(x -> "enum".equals(x.type) || x.primaryKey).map(x -> x.name).toList()))
-                .add("Set.of($L))", quotedFields(entity.fields.stream().filter(x -> x.searchable).map(x -> x.name).toList()));
+                .add("$T.of($L), ", ClassName.get(Set.class), quotedFields(entity.fields.stream().filter(x -> x.sortable).map(x -> x.name).toList()))
+                .add("$T.of($L), ", ClassName.get(Set.class), quotedFields(entity.fields.stream().filter(x -> x.filterable || x.primaryKey).map(x -> x.name).toList()))
+                .add("$T.of($L), ", ClassName.get(Set.class), quotedFields(entity.fields.stream().filter(x -> "enum".equals(x.type) || x.primaryKey).map(x -> x.name).toList()))
+                .add("$T.of($L))", ClassName.get(Set.class), quotedFields(entity.fields.stream().filter(x -> x.searchable).map(x -> x.name).toList()));
         type.addField(FieldSpec.builder(ClassName.get(simpleRest.packageName(), "SimpleRestSupport", "Config"),
                 "CONFIG", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer(config.build()).build());
         type.addField(FieldSpec.builder(repository, "repository", Modifier.PRIVATE, Modifier.FINAL).build());
