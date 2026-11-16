@@ -34,8 +34,11 @@ class CodeGeneratorTest {
         String entity = Files.readString(tmp.resolve("java/com/acme/generated/model/Widget.java"));
         assertTrue(entity.contains("@Entity") && entity.contains("class Widget"));
         assertTrue(entity.contains("@NotBlank"));
-        assertTrue(Files.readString(tmp.resolve("java/com/acme/generated/web/WidgetController.java"))
-                .contains("/api/widgets"));
+        String repository = Files.readString(tmp.resolve("java/com/acme/generated/repository/WidgetRepository.java"));
+        assertTrue(repository.contains("JpaRepository<Widget, Long>"));
+        String controller = Files.readString(tmp.resolve("java/com/acme/generated/web/WidgetController.java"));
+        assertTrue(controller.contains("/api/widgets"));
+        assertTrue(controller.contains("SimpleRestSupport.list"));
         assertTrue(Files.readString(tmp.resolve("ts/generated/WidgetList.tsx")).contains("TanStackTable"));
         assertTrue(Files.readString(tmp.resolve("ts/generated/resources.tsx")).contains("name=\"widgets\""));
     }
