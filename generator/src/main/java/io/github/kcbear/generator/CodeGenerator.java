@@ -324,7 +324,7 @@ public class CodeGenerator {
         Files.createDirectories(out.getParent());
         // Derive the Java source root from the generated package, rather than assuming
         // a fixed base-package depth. JavaPoet appends the package path to this root.
-        Path sourceRoot = out;
+        Path sourceRoot = out.getParent();
         for (String ignored : source.packageName.split("\\.")) {
             sourceRoot = sourceRoot.getParent();
         }
