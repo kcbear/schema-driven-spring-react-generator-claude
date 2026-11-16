@@ -322,7 +322,13 @@ public class CodeGenerator {
 
     private Path writeJava(JavaFile source, Path out) throws IOException {
         Files.createDirectories(out.getParent());
-        source.writeTo(out.getParent().getParent().getParent());
+        // Derive the Java source root from the generated package, rather than assuming
+        // a fixed base-package depth. JavaPoet appends the package path to this root.
+        Path sourceRoot = out;
+        for (String ignored : source.packageName.split("\\.")) {
+            sourceRoot = sourceRoot.getParent();
+        }
+        source.writeTo(sourceRoot);
         return out;
     }
 
