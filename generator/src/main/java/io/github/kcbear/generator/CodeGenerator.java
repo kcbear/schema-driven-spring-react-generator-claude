@@ -40,7 +40,6 @@ public class CodeGenerator {
     private static final ClassName PATTERN = ClassName.get("jakarta.validation.constraints", "Pattern");
     private static final ClassName JPA_REPOSITORY = ClassName.get("org.springframework.data.jpa.repository", "JpaRepository");
     private static final ClassName SPECIFICATION_EXECUTOR = ClassName.get("org.springframework.data.jpa.repository", "JpaSpecificationExecutor");
-    private static final ClassName SIMPLE_REST = ClassName.get("io.github.kcbear.trading.web", "SimpleRestSupport");
 
     /**
      * @param basePackage Java base package of the backend, e.g. io.github.kcbear.trading
@@ -136,7 +135,8 @@ public class CodeGenerator {
     private JavaFile buildController(EntitySchema entity, String basePackage) {
         ClassName model = ClassName.get(basePackage + ".generated.model", entity.name);
         ClassName repository = ClassName.get(basePackage + ".generated.repository", entity.name + "Repository");
-        ClassName listModel = ParameterizedTypeName.get(ClassName.get(List.class), model);
+        TypeName listModel = ParameterizedTypeName.get(ClassName.get(List.class), model);
+        ClassName simpleRest = ClassName.get(basePackage + ".web", "SimpleRestSupport");
         ClassName response = ClassName.get("org.springframework.http", "ResponseEntity");
         TypeSpec.Builder type = TypeSpec.classBuilder(entity.name + "Controller").addModifiers(Modifier.PUBLIC)
                 .addAnnotation(ClassName.get("org.springframework.web.bind.annotation", "RestController"))
@@ -150,7 +150,7 @@ public class CodeGenerator {
                 .add("Set.of($L), ", quotedFields(entity.fields.stream().filter(x -> x.filterable || x.primaryKey).map(x -> x.name).toList()))
                 .add("Set.of($L), ", quotedFields(entity.fields.stream().filter(x -> "enum".equals(x.type) || x.primaryKey).map(x -> x.name).toList()))
                 .add("Set.of($L))", quotedFields(entity.fields.stream().filter(x -> x.searchable).map(x -> x.name).toList()));
-        type.addField(FieldSpec.builder(ClassName.get(SIMPLE_REST.packageName(), "SimpleRestSupport", "Config"),
+        type.addField(FieldSpec.builder(ClassName.get(simpleRest.packageName(), "SimpleRestSupport", "Config"),
                 "CONFIG", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer(config.build()).build());
         type.addField(FieldSpec.builder(repository, "repository", Modifier.PRIVATE, Modifier.FINAL).build());
         type.addMethod(MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC).addParameter(repository, "repository")
@@ -164,7 +164,7 @@ public class CodeGenerator {
                 .addParameter(ParameterSpec.builder(String.class, "range").addAnnotation(optionalRequestParam(requestParam)).build())
                 .addParameter(ParameterSpec.builder(String.class, "filter").addAnnotation(optionalRequestParam(requestParam)).build())
                 .addStatement("return $T.list(repository, CONFIG, sort, range, filter, $S)",
-                        SIMPLE_REST, entity.getIdField().name)
+                        simpleRest, entity.getIdField().name)
                 .addJavadoc("Paged, sorted and filtered list; total count is returned in Content-Range.\n");
         type.addMethod(list.build());
 
