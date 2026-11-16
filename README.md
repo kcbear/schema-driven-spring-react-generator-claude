@@ -5,7 +5,7 @@ Design a **JSON schema** once and get a Spring MVC REST API **and** a react-admi
 trading** (instrument types `STOCK` and `ETF`) with **12,000 instruments** and **15,000 trades** of synthetic data.
 
 ```
-schemas/*.json ──► generator (Java + FreeMarker) ──┬─► Spring: @Entity, Repository, @RestController
+schemas/*.json ──► generator (JavaPoet + Java source builders) ──┬─► Spring: @Entity, Repository, @RestController
                                                    └─► React : react-admin List (TanStack Table), Create/Edit
 ```
 
@@ -18,7 +18,7 @@ Closest options: **JHipster** (entity JDL -> Spring Boot + React, full-stack but
 | Path | Purpose |
 |---|---|
 | `schemas/` | Your entity schemas (`instrument.json`, `trade.json`) |
-| `generator/` | Gradle module: schema model, validator, FreeMarker templates, CLI |
+| `generator/` | Gradle module: schema model, validator, JavaPoet source generation, CLI |
 | `backend/` | Spring Boot 3 app (H2) + `SimpleRestSupport` + `DataSeeder` (12k / 15k rows) |
 | `frontend/` | Vite + React + react-admin + `TanStackTable` component + Playwright tests |
 | `.github/workflows/ci.yml` | Build, unit tests, Playwright; reports kept as artifacts for **1 day** |
@@ -33,7 +33,7 @@ Closest options: **JHipster** (entity JDL -> Spring Boot + React, full-stack but
 ```
 Types: `string long integer decimal boolean date datetime enum`. Field flags: `primaryKey, generated, required,
 maxLength, precision, scale, sortable (default true), filterable, searchable, listVisible (default true), label, description`.
-The primary key must be named `id`.
+The primary key must be named `id`. Java backend files are built with JavaPoet; TypeScript/TSX files are emitted by explicit Java source builders, so no external template engine is used.
 
 ## Run locally (Java 21, Gradle 8.10+, Node 20)
 ```bash
