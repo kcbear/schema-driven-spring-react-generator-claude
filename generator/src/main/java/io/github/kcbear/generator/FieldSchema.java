@@ -7,7 +7,7 @@ import java.util.List;
  * Purpose: in-memory model of ONE field of an entity schema (one entry of the "fields"
  * array in a schemas/*.json file). Jackson fills the public properties from JSON; the
  * getters expose derived values (Java type, JPA/validation annotations, react-admin
- * input component...) that the FreeMarker templates consume.
+ * input component...) used by CodeGenerator.
  */
 public class FieldSchema {
 
@@ -84,38 +84,4 @@ public class FieldSchema {
         };
     }
 
-    private int stringLength() {
-        return "enum".equals(type) ? 32 : (maxLength > 0 ? maxLength : 255);
-    }
-
-    /** JPA + Bean Validation annotations to emit above the Java field. */
-    public List<String> getAnnotations() {
-        List<String> a = new ArrayList<>();
-        if (primaryKey) {
-            a.add("@Id");
-            if (generated) {
-                a.add("@GeneratedValue(strategy = GenerationType.IDENTITY)");
-            }
-        } else if (required) {
-            a.add(("string".equals(type) || "enum".equals(type)) ? "@NotBlank" : "@NotNull");
-        }
-        if ("string".equals(type)) {
-            a.add("@Size(max = " + stringLength() + ")");
-        }
-        if ("enum".equals(type)) {
-            a.add("@Pattern(regexp = \"" + String.join("|", values) + "\")");
-        }
-        StringBuilder col = new StringBuilder("@Column(name = \"" + getColumnName() + "\"");
-        if (required || primaryKey) {
-            col.append(", nullable = false");
-        }
-        if ("string".equals(type) || "enum".equals(type)) {
-            col.append(", length = ").append(stringLength());
-        }
-        if ("decimal".equals(type)) {
-            col.append(", precision = ").append(precision).append(", scale = ").append(scale);
-        }
-        a.add(col.append(")").toString());
-        return a;
-    }
 }
