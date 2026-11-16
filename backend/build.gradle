@@ -35,7 +35,7 @@ tasks.register('generateCode', JavaExec) {
             '--ts-out', tsDir.path,
             '--package', 'io.github.kcbear.trading']
     inputs.dir(schemaDir)
-    inputs.dir(project(':generator').file('src/main/resources/templates'))
+    inputs.dir(project(':generator').file('src/main/java'))
     outputs.dir(genJavaDir)
     outputs.dir(tsDir)
 }
