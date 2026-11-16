@@ -40,7 +40,7 @@ class CodeGeneratorTest {
         assertTrue(controller.contains("/api/widgets"));
         assertTrue(controller.contains("SimpleRestSupport.list"));
         assertTrue(Files.readString(tmp.resolve("ts/generated/WidgetList.tsx")).contains("TanStackTable"));
-        assertTrue(Files.readString(tmp.resolve("ts/generated/resources.tsx")).contains("name=\"widgets\""));
+        assertTrue(Files.readString(tmp.resolve("ts/generated/resources.tsx")).contains("name='widgets'"));
     }
 
     @Test
