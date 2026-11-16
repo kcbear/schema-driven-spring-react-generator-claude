@@ -145,7 +145,7 @@ public class CodeGenerator {
                 .addJavadoc("Purpose: simple-REST controller for $L at /api/$L. Generated from schemas/$L.\n",
                         entity.label, entity.plural, entity.schemaFile);
 
-        CodeBlock.Builder config = CodeBlock.builder().add("new $T.Config($S, ", SIMPLE_REST, entity.plural)
+        CodeBlock.Builder config = CodeBlock.builder().add("new $T.Config($S, ", simpleRest, entity.plural)
                 .add("Set.of($L), ", quotedFields(entity.fields.stream().filter(x -> x.sortable).map(x -> x.name).toList()))
                 .add("Set.of($L), ", quotedFields(entity.fields.stream().filter(x -> x.filterable || x.primaryKey).map(x -> x.name).toList()))
                 .add("Set.of($L), ", quotedFields(entity.fields.stream().filter(x -> "enum".equals(x.type) || x.primaryKey).map(x -> x.name).toList()))
